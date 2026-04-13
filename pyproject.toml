@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hiveguard-security-core"
+version = "0.1.0"
+description = "Open-source security framework for autonomous AI agents"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "UBava OÜ", email = "info@ubava.ee" }]
+requires-python = ">=3.9"
+keywords = ["security", "agents", "autonomous", "ai", "framework", "hiveguard"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://hiveguard.ee"
+Repository = "https://github.com/HWyn2020/hiveguard-security-core"
+"Managed Agents" = "https://ubava.ee"
+
+[tool.setuptools]
+packages = [
+    "framework",
+    "framework.agents",
+    "framework.lifecycle",
+    "framework.security",
+    "framework.types",
+    "examples",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
