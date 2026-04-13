@@ -71,7 +71,7 @@ HiveGuard enforces 20 security properties. See `framework/security/invariants.py
 ## Project Stats
 
 - 15 phases built
-- 8 red-teamed
+- 7 red-teamed
 - 1,976 passing tests
 - 20 security invariants
 - MIT License
