@@ -4,16 +4,14 @@ Example: Simple Echo Agent
 Demonstrates how to build a basic HiveGuard agent.
 
 Usage:
-    python examples/echo_agent.py
+    pip install -e .
+    python -m examples.echo_agent
 """
 
 import asyncio
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from typing import Any, Dict
 
 from framework.agents.base_agent import BaseAgent
-from typing import Any, Dict
 
 
 class EchoAgent(BaseAgent):
