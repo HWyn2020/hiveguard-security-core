@@ -2,17 +2,31 @@
 
 **Open-source security framework for autonomous AI agents.**
 
-Build, deploy, and harden multi-agent systems with production-grade security invariants.
-
-## Want the complete agents?
-
-Pre-built, hardened, production-ready autonomous agents — Scout, Analyst, Fixer, WebScout — with full intelligence, reasoning, and self-healing:
-
-**[hiveguard.ee](https://hiveguard.ee)**
+Build, deploy, and harden your own multi-agent systems with production-grade security invariants.
+Released under the **MIT License** — free to fork, modify, study, and build on.
 
 ---
 
-## What This Repo Is
+## This Repo vs. The Complete HiveGuard
+
+This repository contains the **security framework only** — the open-source skeleton that lets developers understand the architecture, build their own agents, and verify the security model.
+
+The **complete HiveGuard autonomous agent system** — including the Bee Dance Protocol (BDP), Tumbler Vaults, vault integration, jurisdiction-aware autonomy, self-healing Fixer logic, and the full agent intelligence — is **not** in this repo. That IP remains private and is delivered as a managed service through the UBava privacy relay.
+
+### Want the complete agents on day one?
+
+Go to **[ubava.ee](https://ubava.ee)** and:
+
+1. Create an account (no subscription)
+2. Submit two forms of payment for verification
+3. Prepay €50 to your token balance
+4. Pay-as-you-go from there — no lock-in
+
+Agents run on **Claude, Gemini, Grok, and ChatGPT** out of the gate, with full privacy enforcement provided by the UBava relay.
+
+---
+
+## What's In This Repo
 
 This is the **framework** — the skeleton for building your own secure AI agents. It provides:
 
@@ -22,15 +36,18 @@ This is the **framework** — the skeleton for building your own secure AI agent
 - Type definitions for tasks, results, and configuration
 - Example echo agent to get started
 
-## What This Repo Is Not
+## What's Not In This Repo
 
-This repo does **not** include:
 - Pre-built agent intelligence or reasoning engines
 - Domain-specific rules or decision logic
 - Production agent implementations
+- Bee Dance Protocol (BDP) internals
+- Tumbler Vault cryptography and split-key mechanics
 - Vault integration or credential management
+- Jurisdiction-aware autonomy rules
+- Relay infrastructure
 
-Those are available as commercial, managed agents at [hiveguard.ee](https://hiveguard.ee).
+Those live in the private repo and are available as managed agents through [ubava.ee](https://ubava.ee).
 
 ## Quick Start
 
@@ -77,7 +94,15 @@ examples/
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+**MIT** — see [LICENSE](LICENSE).
+
+You're free to use, modify, and distribute this framework, including commercially. Attribution via the copyright notice is all that's required.
+
+## Learn More
+
+- **Marketing site:** [hiveguard.ee](https://hiveguard.ee)
+- **Managed agents & relay signup:** [ubava.ee](https://ubava.ee)
+- **EU compliance posture:** [ubava.ee/legal-compliance](https://ubava.ee/legal-compliance)
 
 ## Built By
 
