@@ -1,1 +1,0 @@
-# HiveGuard Security Core - No external dependencies required.
