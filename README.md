@@ -131,7 +131,7 @@ You should see all tests pass green. The suite covers:
 
 ## Security Invariants
 
-HiveGuard defines **20 security properties** every agent must satisfy. They live in `framework/security/invariants.py` as a documented checklist. Treat this as the **HiveGuard security spec** — anyone building autonomous agents on top of this framework should design against these invariants.
+HiveGuard defines **20 security properties** every agent must satisfy. They live in `framework/security/invariants.py` as a documented checklist — the **HiveGuard security spec**.
 
 A few examples:
 
@@ -149,6 +149,97 @@ for inv in list_invariants():
     print(inv)
 ```
 
+## Runtime Enforcement
+
+The 20 invariants are not just documentation. **12 of them are runtime-enforceable decorators** shipping in `framework/security/enforcement.py`. Apply them to your agent methods, and the framework raises `InvariantViolation` the moment you violate the contract. Build any agent you want on top — HiveGuard guarantees the security floor.
+
+### Quick example
+
+```python
+from framework.agents.base_agent import BaseAgent
+from framework.security.enforcement import (
+    audit_logged,         # INV-06
+    bounded_queue,        # INV-05
+    fail_closed,          # INV-15
+    memory_wiped_on_exit, # INV-03
+    no_sensitive_in_output, # INV-08
+    rate_limited,         # INV-16
+    sanitize_input,       # INV-11
+    shutdown_within,      # INV-09
+    validated_urls,       # INV-12
+)
+
+
+class MyAgent(BaseAgent):
+    @bounded_queue()  # INV-05 — raises if you forget maxsize
+    def __init__(self, agent_id, port):
+        super().__init__(agent_id, agent_type="custom", port=port)
+
+    @audit_logged()   # INV-06 — every call recorded
+    @sanitize_input() # INV-11 — control chars stripped, depth capped
+    async def process_task(self, task):
+        return await self.fetch(url=task["url"])
+
+    @rate_limited(max_calls=30, window_seconds=60)   # INV-16
+    @validated_urls(arg_name="url")                  # INV-12 — SSRF blocked
+    @fail_closed(default_return={"status": "failed"}) # INV-15
+    async def fetch(self, url):
+        ...  # your network code
+
+    @no_sensitive_in_output  # INV-08 — scrubs api_key/password/token from output
+    def health_payload(self):
+        return {"agent_id": self.agent_id, "running": self._running}
+
+    @shutdown_within(seconds=5)  # INV-09 — budget enforced
+    @memory_wiped_on_exit()      # INV-03 — queue must be empty after return
+    async def stop(self):
+        self._running = False
+```
+
+### Enforceable in the public framework
+
+| Invariant | Decorator | What it enforces |
+|---|---|---|
+| INV-01 | `no_direct_llm` | No LLM SDK imports in function globals (anthropic / openai / google / etc.) |
+| INV-03 | `memory_wiped_on_exit()` | Task queue is empty after shutdown returns |
+| INV-05 | `bounded_queue()` | `_task_queue.maxsize > 0` after `__init__` |
+| INV-06 | `audit_logged()` | Every call appends to an audit sink (timestamp, args, result, success flag) |
+| INV-08 | `no_sensitive_in_output` | Recursive scan for keys matching `api_key` / `password` / `secret` / `token` / `credential` / `private_key` / `session_id` / `auth` |
+| INV-09 | `shutdown_within(seconds)` | Async shutdown wrapped in `asyncio.wait_for`, raises on timeout |
+| INV-10 | `env_credentials_wiped(prefixes)` | No env vars matching the prefixes remain after shutdown |
+| INV-11 | `sanitize_input(max_depth)` | Control chars stripped from strings, nesting depth capped, non-JSON types rejected |
+| INV-12 | `validated_urls` / `safe_url()` | Blocks loopback, private ranges, link-local, cloud metadata, non-HTTP(S) schemes |
+| INV-15 | `fail_closed(default_return)` | Exceptions downgraded to a failure sentinel (sync or async) |
+| INV-16 | `rate_limited(N, window)` | Per-function sliding-window limiter |
+| INV-19 | `approved_crypto_hash(algo)` | Allowlist: SHA-2/3, BLAKE2 — blocks MD5, SHA-1, MD4, RIPEMD-160 |
+
+The remaining 8 invariants (INV-02, 04, 07, 13, 14, 17, 18, 20) are documented in the spec but can't be auto-enforced in a pure-Python skeleton — they require domain-specific context (jurisdiction rules, inter-agent auth, cross-agent scoping). The commercial HiveGuard via UBava enforces the full 20 end-to-end.
+
+### Declarative @enforces("INV-XX")
+
+For invariants with a default enforcement, you can use the spec ID directly:
+
+```python
+from framework.security.enforcement import enforces
+
+class MyAgent(BaseAgent):
+    @enforces("INV-06")  # resolves to audit_logged()
+    async def process_task(self, task):
+        return {"ok": True}
+```
+
+`@enforces` validates the ID against the spec and raises `ValueError` if the invariant is unknown or not enforceable in the public skeleton. Use the specific parameterized decorators (`shutdown_within`, `rate_limited`, `sanitize_input`, `env_credentials_wiped`, `validated_urls`) when you need to tune parameters.
+
+### Second example agent
+
+See `examples/monitor_agent.py` for a complete URL-monitoring agent that stacks nine decorators together — `bounded_queue`, `audit_logged`, `sanitize_input`, `rate_limited`, `validated_urls`, `fail_closed`, `no_sensitive_in_output`, `shutdown_within`, `memory_wiped_on_exit`. It's the reference for how real-world enforcement composes.
+
+Run it:
+
+```bash
+python -m examples.monitor_agent
+```
+
 ---
 
 ## Project Architecture
@@ -161,19 +252,25 @@ hiveguard-security-core/
 │   ├── lifecycle/
 │   │   └── states.py            # AgentState enum + LifecycleManager
 │   ├── security/
-│   │   └── invariants.py        # 20 security invariants (the spec)
+│   │   ├── invariants.py        # 20 security invariants (the spec)
+│   │   └── enforcement.py       # Runtime decorators (12 enforceable)
 │   └── types/
 │       └── __init__.py          # Task, TaskResult, AgentConfig, AgentType
 ├── examples/
-│   └── echo_agent.py            # Minimal agent demo
+│   ├── echo_agent.py            # Minimal agent demo
+│   └── monitor_agent.py         # URL monitor stacking 9 enforcement decorators
 ├── tests/                       # pytest suite
 │   ├── conftest.py
 │   ├── test_base_agent.py
 │   ├── test_lifecycle.py
 │   ├── test_invariants.py
+│   ├── test_enforcement.py      # 70 tests covering every decorator
 │   ├── test_types.py
-│   └── test_echo_agent.py
+│   ├── test_echo_agent.py
+│   └── test_monitor_agent.py    # Integration tests for monitor example
 ├── pyproject.toml               # PEP 621 metadata, pip-installable
+├── SECURITY.md                  # Responsible disclosure policy
+├── CONTRIBUTING.md               # Dev setup, PR rules, scope guidelines
 ├── LICENSE                      # MIT
 └── README.md
 ```
