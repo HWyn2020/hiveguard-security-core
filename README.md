@@ -1,5 +1,11 @@
 # HiveGuard Security Core
 
+[![Tests](https://github.com/HWyn2020/hiveguard-security-core/actions/workflows/test.yml/badge.svg)](https://github.com/HWyn2020/hiveguard-security-core/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3B82F6.svg)](https://github.com/HWyn2020/hiveguard-security-core)
+[![Tests: 129](https://img.shields.io/badge/tests-129%20green-10B981.svg)](tests/)
+[![Dependencies: 0](https://img.shields.io/badge/runtime%20deps-0-8B5CF6.svg)](pyproject.toml)
+
 **Open-source security framework for autonomous AI agents.**
 
 The skeleton for building secure multi-agent systems with production-grade security invariants. Released under the **MIT License** — free to fork, modify, study, audit, and build on.
