@@ -1,1 +1,56 @@
-from .invariants import SECURITY_INVARIANTS, check_invariant, list_invariants
+"""HiveGuard security layer — invariants (spec) + enforcement (runtime)."""
+from framework.security.enforcement import (
+    APPROVED_HASHES,
+    BANNED_HASHES,
+    InvariantViolation,
+    RateLimiter,
+    approved_crypto_hash,
+    audit_logged,
+    bounded_queue,
+    clear_audit_log,
+    enforces,
+    env_credentials_wiped,
+    fail_closed,
+    get_audit_log,
+    memory_wiped_on_exit,
+    no_direct_llm,
+    no_sensitive_in_output,
+    rate_limited,
+    safe_url,
+    sanitize_input,
+    shutdown_within,
+    validated_urls,
+)
+from framework.security.invariants import (
+    SECURITY_INVARIANTS,
+    check_invariant,
+    list_invariants,
+)
+
+__all__ = [
+    # Spec
+    "SECURITY_INVARIANTS",
+    "check_invariant",
+    "list_invariants",
+    # Runtime enforcement
+    "InvariantViolation",
+    "enforces",
+    "no_direct_llm",
+    "memory_wiped_on_exit",
+    "bounded_queue",
+    "audit_logged",
+    "get_audit_log",
+    "clear_audit_log",
+    "no_sensitive_in_output",
+    "shutdown_within",
+    "env_credentials_wiped",
+    "sanitize_input",
+    "safe_url",
+    "validated_urls",
+    "fail_closed",
+    "RateLimiter",
+    "rate_limited",
+    "APPROVED_HASHES",
+    "BANNED_HASHES",
+    "approved_crypto_hash",
+]
